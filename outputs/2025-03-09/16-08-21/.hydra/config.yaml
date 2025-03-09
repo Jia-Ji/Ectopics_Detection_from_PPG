@@ -1,0 +1,20 @@
+data:
+  path:
+    train:
+      x_path: /Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/x_train.npy
+      y_path: /Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/y_train.npy
+    valid:
+      x_path: /Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/x_val.npy
+      y_path: /Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/y_val.npy
+    test:
+      x_path: /Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/x_test.npy
+      y_path: /Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/y_test.npy
+  loader:
+    batch_size: 1024
+    num_workers: 4
+    pin_memory: true
+    drop_last: false
+    persistent_workers: false
+trainer:
+  parameters: null
+  logger: null

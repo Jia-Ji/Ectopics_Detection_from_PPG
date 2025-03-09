@@ -1,0 +1,32 @@
+clear
+d0 = 'D:\sincro\Drive_E2\Data_MEF\Data_ori\Barts';
+X = dir([d0,'\**\*PLETH-BIN.dat']);
+
+for isbj = 1:length(X)
+    d = X(isbj).folder;
+
+    filename = [d,filesep,'GE-WF-ECG1-BIN.dat'];
+    fileID = fopen(filename);
+    ecg = fread(fileID,'single','ieee-be');
+    fclose(fileID);
+
+    filename = [d,filesep,'GE-WF-INVP1-BIN.dat'];
+    fileID = fopen(filename);
+    bp = fread(fileID,'single','ieee-be');
+    fclose(fileID);
+
+    filename = [d,filesep,'GE-WF-PLETH-BIN.dat'];
+    fileID = fopen(filename);
+    ppg = fread(fileID,'single','ieee-be');
+    fclose(fileID);
+
+    signals.ppg = ppg;
+    signals.ecg = ecg;
+    signals.abp = bp;
+    Params.filename = X(isbj).folder;
+Params.SamplingRate_ecg = 300;
+Params.SamplingRate_ppg = 100;
+Params.SamplingRate_abp = 100;
+
+    save([ds,'Sig_',num2str(isbj,'%03.0f')],'signals','Params')
+end
