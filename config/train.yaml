@@ -15,6 +15,23 @@ data:
       pin_memory: True
       drop_last: False
       persistent_workers: False
+
+model:
+  task: binary
+  num_classes: 2
+  lr: 0.0001
+  loss_name: gce
+  device: cuda
+  hyperparameters:
+    classifier:
+      in_channels: 1
+      stride: 1
+  metrics:
+    accuarcy: 1
+    cf_matrix: 1
+    f1: 1
+
+
 trainer:
   parameters:
   
