@@ -97,8 +97,7 @@ class EctopicsClassifier(pl.LightningModule):
                         self.task, num_classes=self.num_classes
                     )
         
-        self.step_outputs = {"train": [], "valid": [], "test": []}
-        self.step_losses = {"loss_cl": [], "loss_cmc": []}
+        self.step_losses = {"train": [], "valid": [], "test": []}
 
     def configure_optimizers(self):
     
@@ -118,6 +117,98 @@ class EctopicsClassifier(pl.LightningModule):
             return [optimizer], [scheduler]
 
         return optimizer
+
+    def forwrd(self, x: Tensor):
+        return self.model(x)
+
+    def plot_confusion_matrix(self, matrix):
+        fig, ax = plt.subplots()
+        cax = ax.matshow(matrix.cpu().numpy())
+        fig.colorbar(cax)
+    
+        buf = io.BytesIO()
+        plt.savefig(buf, format='jpeg')
+        plt.close(fig)  # ensure to close the figure to free memory
+        buf.seek(0)
+    
+        image = Image.open(buf)
+        image_tensor = ToTensor()(image)
+    
+        return image_tensor
+
+    def update_metrics(self, outputs, targets, phase: str = "train"):
+        # model_device =  next(self.model.parameters()).device
+        for k in self.config.metrics:
+            # metric_device = self.metrics["metrics_" + phase][k].device
+            self.metrics["metrics_" + phase][k].update(outputs, targets)
+
+    def reset_metrics(self, phase: str = "train"):
+        for k in self.config.metrics:
+            self.metrics["metrics_" + phase][k].reset()
+    
+    def log_all(self, items: List[Tuple[str, Union[float, torch.Tensor]]], phase: str = "train", prog_bar: bool = True, sync_dist_group: bool = False):
+        for key, value in items:
+            if value is not None:
+                # Check if value is a float
+                if isinstance(value, float):
+                    self.log(f"{phase}_{key}", value, prog_bar=prog_bar, sync_dist_group=sync_dist_group)
+                # Check if value is a tensor
+                elif isinstance(value, torch.Tensor):
+                    if len(value.shape) == 0:  # Scalar tensor
+                        self.log(f"{phase}_{key}", value, prog_bar=prog_bar, sync_dist_group=sync_dist_group)
+                    elif len(value.shape) == 2:  # 2D tensor, assume confusion matrix and log as image
+                        image_tensor = self.plot_confusion_matrix(value)
+                        self.logger.experiment.add_image(f"{phase}_{key}", image_tensor, global_step=self.current_epoch)
+
+    def training_step(self, batch, batch_idx):
+
+        x, y = batch
+        output_logits = self(x)
+        preds = torch.argmax(output_logits, dim=1)
+
+        if self.loss_name == "bce":
+            loss = self.loss_fn(targets, output_logits)
+        else:
+            raise ValueError(f"Invalid loss function: {self.loss_name}")
+        
+        self.update_metrics(preds, targets, "train")
+          
+        self.step_losses["train"].append(loss.item())
+        return {"loss": loss}
+
+    def on_train_epoch_end(self):
+        """End of the training epoch"""
+        avg_loss = sum(self.step_losses["train"]) / len(self.step_losses["train"])
+
+        acc, matrix, f1 = None, None, None
+
+        if "accuracy" in self.list_metrics:
+            acc = self.metrics["metrics_" + "train"]["accuracy"].compute()
+
+        if "cf_matrix" in self.list_metrics:
+            matrix = self.metrics["metrics_" + "train"]["cf_matrix"].compute()
+
+        if "f1" in self.list_metrics:
+            f1 = self.metrics["metrics_" + "train"]["f1"].compute()
+        
+        self.log_all(
+                items=[
+                    ("avg_loss", avg_loss),
+                    ("accuracy", acc),
+                    ("confusion_matrix", matrix),
+                    ("f1", f1),
+                ],
+                phase="train",
+                prog_bar=True,
+                sync_dist_group=False,
+            )
+        
+        self.reset_metrics("train")
+        self.step_losses["train"].clear()
+
+
+
+
 
 
 
