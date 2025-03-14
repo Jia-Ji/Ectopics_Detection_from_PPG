@@ -162,7 +162,7 @@ class EctopicsClassifier(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
 
-        x, y = batch
+        x, targets = batch
         output_logits = self(x)
         preds = torch.argmax(output_logits, dim=1)
 
@@ -193,7 +193,7 @@ class EctopicsClassifier(pl.LightningModule):
         
         self.log_all(
                 items=[
-                    ("avg_loss", avg_loss),
+                    ("loss", avg_loss),
                     ("accuracy", acc),
                     ("confusion_matrix", matrix),
                     ("f1", f1),
@@ -205,6 +205,102 @@ class EctopicsClassifier(pl.LightningModule):
         
         self.reset_metrics("train")
         self.step_losses["train"].clear()
+
+    def validation_step(self, batch):
+        
+        x, targets = batch
+        output_logits = self(x)
+        preds = torch.argmax(output_logits, dim=1)
+        loss = F.cross_entropy(output_logits, targets)
+
+        self.update_metrics(preds, targets, "valid")
+        self.step_losses["valid"].append(loss)
+
+        return {"val_loss": loss}
+    
+    def on_valid_epoch_end(self):
+        """End of the training epoch"""
+        avg_loss = sum(self.step_losses["valid"]) / len(self.step_losses["valid"])
+
+        acc, matrix, f1 = None, None, None
+
+        if "accuracy" in self.list_metrics:
+            acc = self.metrics["metrics_" + "valid"]["accuracy"].compute()
+
+        if "cf_matrix" in self.list_metrics:
+            matrix = self.metrics["metrics_" + "valid"]["cf_matrix"].compute()
+
+        if "f1" in self.list_metrics:
+            f1 = self.metrics["metrics_" + "valid"]["f1"].compute()
+        
+        self.log_all(
+                items=[
+                    ("loss", avg_loss),
+                    ("accuracy", acc),
+                    ("confusion_matrix", matrix),
+                    ("f1", f1),
+                ],
+                phase="valid",
+                prog_bar=True,
+                sync_dist_group=False,
+            )
+        
+        self.reset_metrics("valid")
+        self.step_losses["valid"].clear()
+    
+    def test_step(self, batch):
+        
+        x, targets = batch
+        output_logits = self(x)
+        preds = torch.argmax(output_logits, dim=1)
+        loss = F.cross_entropy(output_logits, targets)
+
+        self.update_metrics(preds, targets, "test")
+        self.step_losses["test"].append(loss)
+
+        return {'test_loss': loss}
+
+    def on_test_epoch_end(self):
+        """End of the training epoch"""
+        avg_loss = sum(self.step_losses["test"]) / len(self.step_losses["test"])
+
+        acc, matrix, f1 = None, None, None
+
+        if "accuracy" in self.list_metrics:
+            acc = self.metrics["metrics_" + "test"]["accuracy"].compute()
+
+        if "cf_matrix" in self.list_metrics:
+            matrix = self.metrics["metrics_" + "test"]["cf_matrix"].compute()
+
+        if "f1" in self.list_metrics:
+            f1 = self.metrics["metrics_" + "test"]["f1"].compute()
+        
+        self.log_all(
+                items=[
+                    ("loss", avg_loss),
+                    ("accuracy", acc),
+                    ("confusion_matrix", matrix),
+                    ("f1", f1),
+                ],
+                phase="test",
+                prog_bar=True,
+                sync_dist_group=False,
+            )
+        
+        self.reset_metrics("test")
+        self.step_losses["test"].clear()
+
+    def predict_step(self, batch):
+        x, targets = batch
+        output_logits = self(x)
+        preds = torch.argmax(output_logits, dim=1)
+        return logits
+
+
+    
+    
+
+
 
 
 
