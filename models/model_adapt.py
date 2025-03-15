@@ -14,10 +14,10 @@ from PIL import Image
 from torchvision.transforms import ToTensor
 from typing import List, Tuple, Union
 
-from resnet import resnet18
-from loss_function import get_loss_function
+from .resnet import resnet18
+from .loss_function import get_loss_function
 
-class CompeleteModel(nn.Model):
+class CompeleteModel(nn.Module):
     def __init__(self, config: DictConfig):
         super().__init__()
         self.config = config
