@@ -9,8 +9,8 @@ class TrainDataset(Dataset):
         self.y = np.load(y_path)
     
     def __getitem__(self, index):
-        x_get = self.x[index]
-        y_get = self.y[index]
+        x_get = self.x[index].astype(np.float32)
+        y_get = self.y[index].astype(np.int64)
         return x_get, y_get
     
     def __len__(self):
@@ -24,8 +24,8 @@ class ValidDataset(Dataset):
         self.y = np.load(y_path)
     
     def __getitem__(self, index):
-        x_get = self.x[index]
-        y_get = self.y[index]
+        x_get = self.x[index].astype(np.float32)
+        y_get = self.y[index].astype(np.int64)
         return x_get, y_get
     
     def __len__(self):
@@ -39,8 +39,8 @@ class TestDataset(Dataset):
         self.y = np.load(y_path)
     
     def __getitem__(self, index):
-        x_get = self.x[index]
-        y_get = self.y[index]
+        x_get = self.x[index].astype(np.float32)
+        y_get = self.y[index].astype(np.int64)
         return x_get, y_get
     
     def __len__(self):

@@ -9,3 +9,5 @@ pytorch-lightning
 transformers
 hydra-core
 scikit-learn
+tensorboardx
+tensorboard

@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 class BasicBlock(nn.Module):
     expansion = 1  # No expansion in BasicBlock
@@ -97,7 +98,7 @@ class ResNet(nn.Module):
         x = torch.flatten(x, 1)
         x = self.fc(x)
 
-        return x
+        return F.softmax(x, dim=1)
 
-def resnet18(num_classes=2):
-    return ResNet(BasicBlock, signal_channels=1, layers=[2, 2, 2, 2], num_classes=num_classes)
+def resnet18(signal_channels, stride, num_classes=2):
+    return ResNet(BasicBlock, signal_channels=signal_channels, layers=[2, 2, 2, 2], num_classes=num_classes)
