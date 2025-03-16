@@ -23,6 +23,7 @@ def main(cfg: DictConfig) -> None:
     total_training_steps = len(train_loader) * cfg.trainer.parameters.max_epochs
 
     model = EctopicsClassifier(**cfg.model, total_training_steps = total_training_steps)
+    model.to("cpu")
 
     checkpoint_callback = ModelCheckpoint(**cfg.trainer.callbacks.model_checkpoint)
     early_stop_callback = EarlyStopping(**cfg.trainer.callbacks.early_stop)

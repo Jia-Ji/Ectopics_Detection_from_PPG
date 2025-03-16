@@ -10,7 +10,7 @@ data:
       x_path: "/Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/x_test.npy"
       y_path: "/Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/y_test.npy"
   loader:
-      batch_size: 1024
+      batch_size: 1
       num_workers: 4
       pin_memory: True
       drop_last: False
@@ -20,36 +20,37 @@ model:
   task: binary
   num_classes: 2
   lr: 0.0001
-  loss_name: gce
+  loss_name: bce
   use_lr_scheduler: True
   lr_warmup_ratio: 0.1
   device: cuda
-  hyperparameters:
-    classifier:
-      in_channels: 1
-      stride: 1
-  metrics:
-    accuarcy: 1
-    cf_matrix: 1
-    f1: 1
+  config:
+    hyperparameters:
+      classifier:
+        signal_channels: 1
+        stride: 1
+    metrics:
+      accuracy: 1
+      cf_matrix: 1
+      f1: 1
 
 
 trainer:
   parameters:
-    accelerator: "gpu"
+    accelerator: "cpu"
     strategy: "auto"
     devices: "auto"
     num_nodes: 1
     precision: "16"
-    fast_dev_run: False
-    max_epochs: 30
+    fast_dev_run: True
+    max_epochs: 1
     min_epochs: 1
     max_steps: -1
-    min_steps: None
-    max_time: None
-    limit_train_batches: 1.0
-    limit_val_batches: 1.0
-    limit_test_batches: null
+    min_steps: Null
+    max_time: Null
+    limit_train_batches: 1
+    limit_val_batches: 0.0
+    limit_test_batches: 1
     limit_predict_batches: null
     overfit_batches: 0.0
     val_check_interval: null
@@ -71,8 +72,6 @@ trainer:
     sync_batchnorm: False
     reload_dataloaders_every_n_epochs: 0
     default_root_dir: null
-
-  
   callbacks:
     model_checkpoint:
       dirpath: "checkpoints"
@@ -84,18 +83,18 @@ trainer:
       save_weights_only: False
       mode: "min"
       auto_insert_metric_name: True
-      every_n_train_steps: None
-      train_time_interval: None
-      every_n_epochs: None
+      every_n_train_steps: Null
+      train_time_interval: Null
+      every_n_epochs: Null
       save_on_train_epoch_end: False
     logger:
       save_dir: logs/
       name: ""
-      version: None
+      version: Null
       log_graph: False
       default_hp_metric: True
       prefix: ""
-      sub_dir: None
+      sub_dir: Null
     early_stop:
       monitor: "valid_loss"
       min_delta: 0.5
@@ -110,3 +109,11 @@ trainer:
     progress_bar:
       refresh_rate: 10
       process_position: 0
+
+
+experiment:
+  train: True
+  test: False
+  resume_ckpt: False
+  ckpt_path: null
+  saved_model_path: null

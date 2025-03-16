@@ -43,7 +43,8 @@ class EctopicsClassifier(pl.LightningModule):
                  lr_warmup_ratio: float = 0.1,
                  device: str="cuda",
                  total_training_steps: int=1000,
-                 config: DictConfig=None):
+                 config: DictConfig=None,
+                 **kwargs):
         super().__init__()
 
         self.task = task
@@ -52,6 +53,7 @@ class EctopicsClassifier(pl.LightningModule):
         self.loss_name = loss_name
         self.use_lr_scheduler = use_lr_scheduler
         self.warmup_ratio = lr_warmup_ratio
+    
 
         if device == "cuda" and torch.cuda.is_available():
             self.device_type = torch.device("cuda")
@@ -69,7 +71,7 @@ class EctopicsClassifier(pl.LightningModule):
         print("Loss Function: ", self.loss_name, flush=True)
         print("Metrics: ", self.config.metrics, flush=True)
 
-        self.model = CompeleteModel(config.model)
+        self.model = CompeleteModel(self.config)
         
         if self.loss_name == 'bce':
             self.loss_fn = get_loss_function(self.loss_name)
@@ -118,7 +120,7 @@ class EctopicsClassifier(pl.LightningModule):
 
         return optimizer
 
-    def forwrd(self, x: Tensor):
+    def forward(self, x: Tensor):
         return self.model(x)
 
     def plot_confusion_matrix(self, matrix):
@@ -173,6 +175,7 @@ class EctopicsClassifier(pl.LightningModule):
         
         self.update_metrics(preds, targets, "train")
           
+        print(type(loss))  
         self.step_losses["train"].append(loss.item())
         return {"loss": loss}
 
@@ -182,13 +185,13 @@ class EctopicsClassifier(pl.LightningModule):
 
         acc, matrix, f1 = None, None, None
 
-        if "accuracy" in self.list_metrics:
+        if "accuracy" in self.metrics_lst:
             acc = self.metrics["metrics_" + "train"]["accuracy"].compute()
 
-        if "cf_matrix" in self.list_metrics:
+        if "cf_matrix" in self.metrics_lst:
             matrix = self.metrics["metrics_" + "train"]["cf_matrix"].compute()
 
-        if "f1" in self.list_metrics:
+        if "f1" in self.metrics_lst:
             f1 = self.metrics["metrics_" + "train"]["f1"].compute()
         
         self.log_all(
@@ -224,13 +227,13 @@ class EctopicsClassifier(pl.LightningModule):
 
         acc, matrix, f1 = None, None, None
 
-        if "accuracy" in self.list_metrics:
+        if "accuracy" in self.metrics_lst:
             acc = self.metrics["metrics_" + "valid"]["accuracy"].compute()
 
-        if "cf_matrix" in self.list_metrics:
+        if "cf_matrix" in self.metrics_list:
             matrix = self.metrics["metrics_" + "valid"]["cf_matrix"].compute()
 
-        if "f1" in self.list_metrics:
+        if "f1" in self.metrics_lst:
             f1 = self.metrics["metrics_" + "valid"]["f1"].compute()
         
         self.log_all(
@@ -266,13 +269,13 @@ class EctopicsClassifier(pl.LightningModule):
 
         acc, matrix, f1 = None, None, None
 
-        if "accuracy" in self.list_metrics:
+        if "accuracy" in self.metrics_lst:
             acc = self.metrics["metrics_" + "test"]["accuracy"].compute()
 
-        if "cf_matrix" in self.list_metrics:
+        if "cf_matrix" in self.metrics_lst:
             matrix = self.metrics["metrics_" + "test"]["cf_matrix"].compute()
 
-        if "f1" in self.list_metrics:
+        if "f1" in self.metrics_lst:
             f1 = self.metrics["metrics_" + "test"]["f1"].compute()
         
         self.log_all(
@@ -294,7 +297,7 @@ class EctopicsClassifier(pl.LightningModule):
         x, targets = batch
         output_logits = self(x)
         preds = torch.argmax(output_logits, dim=1)
-        return logits
+        return preds
 
 
     
