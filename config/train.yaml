@@ -1,14 +1,14 @@
 data:
   path:
     train:
-      x_path: "/Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/x_train.npy"
-      y_path: "/Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/y_train.npy"
+      x_path: "./PPG_data/splitted_data/x_train.npy"
+      y_path: "./PPG_data/splitted_data/y_train.npy"
     valid:
-      x_path: "/Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/x_val.npy"
-      y_path: "/Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/y_val.npy"
+      x_path: "./PPG_data/splitted_data/x_val.npy"
+      y_path: "./PPG_data/splitted_data/y_val.npy"
     test:
-      x_path: "/Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/x_test.npy"
-      y_path: "/Users/cdllyyy/Desktop/Ectopics_in_PPG/Ectopics_Detection_from_PPG/PPG_data/splitted_data/y_test.npy"
+      x_path: "./PPG_data/splitted_data/x_test.npy"
+      y_path: "./PPG_data/splitted_data/y_test.npy"
   loader:
       batch_size: 1
       num_workers: 4
@@ -37,20 +37,20 @@ model:
 
 trainer:
   parameters:
-    accelerator: "cpu"
+    accelerator: "gpu"
     strategy: "auto"
     devices: "auto"
     num_nodes: 1
     precision: "16"
-    fast_dev_run: True
-    max_epochs: 1
+    fast_dev_run: False
+    max_epochs: 30
     min_epochs: 1
     max_steps: -1
     min_steps: Null
     max_time: Null
-    limit_train_batches: 1
-    limit_val_batches: 0.0
-    limit_test_batches: 1
+    limit_train_batches: Null
+    limit_val_batches: Null
+    limit_test_batches: Null
     limit_predict_batches: null
     overfit_batches: 0.0
     val_check_interval: null
