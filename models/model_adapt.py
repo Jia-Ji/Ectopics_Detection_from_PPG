@@ -221,7 +221,7 @@ class EctopicsClassifier(pl.LightningModule):
 
         return {"val_loss": loss}
     
-    def on_valid_epoch_end(self):
+    def on_validation_epoch_end(self):
         """End of the training epoch"""
         avg_loss = sum(self.step_losses["valid"]) / len(self.step_losses["valid"])
 
@@ -230,7 +230,7 @@ class EctopicsClassifier(pl.LightningModule):
         if "accuracy" in self.metrics_lst:
             acc = self.metrics["metrics_" + "valid"]["accuracy"].compute()
 
-        if "cf_matrix" in self.metrics_list:
+        if "cf_matrix" in self.metrics_lst:
             matrix = self.metrics["metrics_" + "valid"]["cf_matrix"].compute()
 
         if "f1" in self.metrics_lst:
@@ -250,6 +250,7 @@ class EctopicsClassifier(pl.LightningModule):
         
         self.reset_metrics("valid")
         self.step_losses["valid"].clear()
+
     
     def test_step(self, batch):
         
