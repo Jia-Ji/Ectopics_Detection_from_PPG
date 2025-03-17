@@ -250,10 +250,6 @@ class EctopicsClassifier(pl.LightningModule):
         
         self.reset_metrics("valid")
         self.step_losses["valid"].clear()
-<<<<<<< HEAD
-=======
-
->>>>>>> edf750858c37d3716095714f73910ac0ee97e697
     
     def test_step(self, batch):
         
