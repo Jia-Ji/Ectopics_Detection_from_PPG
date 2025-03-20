@@ -98,6 +98,15 @@ class EctopicsClassifier(pl.LightningModule):
                     self.metrics["metrics_" + phase][metric] = torchmetrics.F1Score(
                         self.task, num_classes=self.num_classes
                     )
+                elif metric == "specificity":
+                    self.metrics["metrics_" + phase][metric] = torchmetrics.Specificity(
+                        self.task, num_classes=self.num_classes
+                    )
+                elif metric == "AUC":
+                    self.metrics["metrics_" + phase][metric] = torchmetrics.AUC(
+                        self.task, num_classes=self.num_classes
+                    )
+
         
         self.step_losses = {"train": [], "valid": [], "test": []}
 
@@ -194,10 +203,18 @@ class EctopicsClassifier(pl.LightningModule):
         if "f1" in self.metrics_lst:
             f1 = self.metrics["metrics_" + "train"]["f1"].compute()
         
+        if "specificity" in self.metrics_lst:
+            spec = self.metrics["metrics_" + "train"]["specificity"].compute()
+
+        if "AUC"  in self.metrics_lst:
+            auc = self.metrics["metrics_" + "train"]["AUC"].compute()
+        
         self.log_all(
                 items=[
                     ("loss", avg_loss),
                     ("accuracy", acc),
+                    ("specificity", spec),
+                    ("AUC", auc),
                     ("confusion_matrix", matrix),
                     ("f1", f1),
                 ],
@@ -236,10 +253,18 @@ class EctopicsClassifier(pl.LightningModule):
         if "f1" in self.metrics_lst:
             f1 = self.metrics["metrics_" + "valid"]["f1"].compute()
         
+        if "specificity" in self.metrics_lst:
+            spec = self.metrics["metrics_" + "valid"]["specificity"].compute()
+
+        if "AUC"  in self.metrics_lst:
+            auc = self.metrics["metrics_" + "valid"]["AUC"].compute()
+        
         self.log_all(
                 items=[
                     ("loss", avg_loss),
                     ("accuracy", acc),
+                    ("specificity", spec),
+                    ("AUC", auc),
                     ("confusion_matrix", matrix),
                     ("f1", f1),
                 ],
@@ -278,10 +303,18 @@ class EctopicsClassifier(pl.LightningModule):
         if "f1" in self.metrics_lst:
             f1 = self.metrics["metrics_" + "test"]["f1"].compute()
         
+        if "specificity" in self.metrics_lst:
+            spec = self.metrics["metrics_" + "test"]["specificity"].compute()
+
+        if "AUC"  in self.metrics_lst:
+            auc = self.metrics["metrics_" + "test"]["AUC"].compute()
+        
         self.log_all(
                 items=[
                     ("loss", avg_loss),
                     ("accuracy", acc),
+                    ("specificity", spec),
+                    ("AUC", auc),
                     ("confusion_matrix", matrix),
                     ("f1", f1),
                 ],

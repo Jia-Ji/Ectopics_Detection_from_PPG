@@ -33,6 +33,9 @@ model:
       accuracy: 1
       cf_matrix: 1
       f1: 1
+      Specificity: 1
+      AUC: 1
+      
 
 
 trainer:
