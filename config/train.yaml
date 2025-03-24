@@ -100,7 +100,7 @@ trainer:
       sub_dir: Null
     early_stop:
       monitor: "valid_loss"
-      min_delta: 0.5
+      min_delta: 0.05
       patience: 10
       verbose: True
       mode: "min"
