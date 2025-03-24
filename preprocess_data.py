@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from skmultilearn.model_selection import iterative_train_test_split
 import numpy as np
+from sklearn.preprocessing import LabelEncoder
 
 # Load .mat file
 mat_file_path = "./PPG_data/Compiled/PPGECG_all.mat"
@@ -22,6 +23,11 @@ PPG = np.expand_dims(PPG, axis=1)
 csv_file_path = "./PPG_data/Compiled/PPGECG_all_table.csv"
 df = pd.read_csv(csv_file_path)
 df['index'] = df.index
+ECGcat = df['ECGcat'].to_numpy()
+# convert ECGcat from str to one-hot integer label
+encoder = LabelEncoder()
+ECGcat = ECGcat
+ECGcat = encoder.fit_transform(ECGcat) 
 
 summary = (
     df.groupby(['ID0', 'ECGcat'])
@@ -30,8 +36,8 @@ summary = (
 )
 
 pivot = summary.pivot(index='ID0', columns='ECGcat', values='count').fillna(0)
-X = np.array(pivot.index).reshape(-1, 1)  
-y = pivot.values  
+X = np.array(pivot.index).reshape(-1, 1)
+y = pivot.values
 
 # First split: train (60%) vs temp (40%)
 X_train, y_train, X_temp, y_temp = iterative_train_test_split(X, y, test_size=0.4)
@@ -55,9 +61,9 @@ x_train = PPG[df_train_index]
 x_val = PPG[df_val_index]
 x_test = PPG[df_test_index]
 
-y_train = df[df['ID0'].isin(train_patients)]["ECGcat"].to_numpy()
-y_val = df[df['ID0'].isin(val_patients)]["ECGcat"].to_numpy()
-y_test = df[df['ID0'].isin(test_patients)]["ECGcat"].to_numpy()
+y_train = ECGcat[df_train_index]
+y_val = ECGcat[df_val_index]
+y_test = ECGcat[df_test_index]
 
 print(f"The shape of x_train is {x_train.shape}")
 print(f"The shape of x_val is {x_val.shape}")
@@ -66,6 +72,12 @@ print(f"The shape of y_train is {y_train.shape}")
 print(f"The shape of y_val is {y_val.shape}")
 print(f"The shape of y_test is {y_test.shape}")
 
+print(f"The type of y_train is {type(y_train)}")
+print(f"The type of x_train is {type(x_train)}")
+print(f"The type of y_val is {type(y_val)}")
+print(f"The type of x_val is {type(x_val)}")
+print(f"The type of y_test is {type(y_test)}")
+print(f"The type of x_test is {type(x_test)}")
 #  check stratification
 print( 'Check stratification.......')
 def show_distribution(df_split, name):
@@ -83,8 +95,6 @@ print(set(train_patients) & set(test_patients))
 print(set(val_patients) & set(test_patients))
 
 command = input("Enter your command (yes/no): ")
-
-
 if command == "yes":
     with open('./PPG_data/splitted_data/x_train.npy', 'wb') as f:
         np.save(f, x_train)
@@ -100,5 +110,3 @@ if command == "yes":
         np.save(f, y_test)
 elif command == "no":
     pass
-else:
-    print("Please enter valid command.")

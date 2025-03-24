@@ -103,7 +103,7 @@ class EctopicsClassifier(pl.LightningModule):
                         self.task, num_classes=self.num_classes
                     )
                 elif metric == "AUC":
-                    self.metrics["metrics_" + phase][metric] = torchmetrics.AUC(
+                    self.metrics["metrics_" + phase][metric] = torchmetrics.AUROC(
                         self.task, num_classes=self.num_classes
                     )
 
