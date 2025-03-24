@@ -55,9 +55,9 @@ x_train = PPG[df_train_index]
 x_val = PPG[df_val_index]
 x_test = PPG[df_test_index]
 
-y_train = df[df['ID0'].isin(train_patients)]["ECGcat"]
-y_val = df[df['ID0'].isin(val_patients)]["ECGcat"]
-y_test = df[df['ID0'].isin(test_patients)]["ECGcat"]
+y_train = df[df['ID0'].isin(train_patients)]["ECGcat"].to_numpy()
+y_val = df[df['ID0'].isin(val_patients)]["ECGcat"].to_numpy()
+y_test = df[df['ID0'].isin(test_patients)]["ECGcat"].to_numpy()
 
 print(f"The shape of x_train is {x_train.shape}")
 print(f"The shape of x_val is {x_val.shape}")
@@ -66,10 +66,7 @@ print(f"The shape of y_train is {y_train.shape}")
 print(f"The shape of y_val is {y_val.shape}")
 print(f"The shape of y_test is {y_test.shape}")
 
-
-
 #  check stratification
-
 print( 'Check stratification.......')
 def show_distribution(df_split, name):
     dist = df_split['ECGcat'].value_counts(normalize=True) * 100
