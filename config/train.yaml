@@ -92,7 +92,7 @@ trainer:
       save_on_train_epoch_end: False
     logger:
       save_dir: logs/
-      name: "resnet18-{epoch:02d}-{valid_loss:2f}-{valid_accuracy:2f}"
+      name: ""
       version: Null
       log_graph: False
       default_hp_metric: True
