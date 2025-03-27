@@ -14,7 +14,7 @@ from PIL import Image
 from torchvision.transforms import ToTensor
 from typing import List, Tuple, Union
 
-from .resnet import resnet18
+from .resnet import resnet18, resnet10
 from .loss_function import get_loss_function
 
 class CompeleteModel(nn.Module):
@@ -25,7 +25,7 @@ class CompeleteModel(nn.Module):
     
 
     def __initialize_modules(self, config: DictConfig):
-        self.classifier = resnet18(**config.hyperparameters.classifier)
+        self.classifier = resnet10(**config.hyperparameters.classifier)
     
     def forward(self, x:Tensor):
         logits = self.classifier(x)

@@ -102,3 +102,6 @@ class ResNet(nn.Module):
 
 def resnet18(signal_channels, stride, num_classes=2):
     return ResNet(BasicBlock, signal_channels=signal_channels, layers=[2, 2, 2, 2], num_classes=num_classes)
+
+def resnet10(signal_channels, stride, num_classes=2):
+    return ResNet(BasicBlock, signal_channels=signal_channels, layers=[1, 1, 1, 1], num_classes=num_classes)
