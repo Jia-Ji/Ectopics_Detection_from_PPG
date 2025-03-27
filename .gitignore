@@ -5,4 +5,4 @@ PPG_data/Compiled
 PPG_data/Scripts
 logs/
 checkpoints/
-main_log.txt
+#main_log.txt

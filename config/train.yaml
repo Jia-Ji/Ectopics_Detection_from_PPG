@@ -10,7 +10,7 @@ data:
       x_path: "./PPG_data/splitted_data/x_test.npy"
       y_path: "./PPG_data/splitted_data/y_test.npy"
   loader:
-      batch_size: 1024
+      batch_size: 512
       num_workers: 4
       pin_memory: True
       drop_last: False
@@ -21,7 +21,7 @@ model:
   num_classes: 2
   lr: 0.0001
   loss_name: bce
-  use_lr_scheduler: True
+  use_lr_scheduler: False
   lr_warmup_ratio: 0.1
   device: cuda
   config:
@@ -100,7 +100,7 @@ trainer:
       sub_dir: Null
     early_stop:
       monitor: "valid_loss"
-      min_delta: 0.05
+      min_delta: 0.01
       patience: 10
       verbose: True
       mode: "min"
