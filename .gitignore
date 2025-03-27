@@ -3,6 +3,6 @@ outputs/
 __pycache__
 PPG_data/Compiled
 PPG_data/Scripts
-logs/
+#logs/
 checkpoints/
 #main_log.txt
