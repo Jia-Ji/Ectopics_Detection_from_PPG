@@ -11,3 +11,4 @@ hydra-core
 scikit-learn
 tensorboardx
 tensorboard
+skmultilearn
