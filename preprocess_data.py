@@ -26,8 +26,8 @@ df['index'] = df.index
 ECGcat = df['ECGcat'].to_numpy()
 # convert ECGcat from str to one-hot integer label
 encoder = LabelEncoder()
-ECGcat = ECGcat
 ECGcat = encoder.fit_transform(ECGcat) 
+
 
 summary = (
     df.groupby(['ID0', 'ECGcat'])
