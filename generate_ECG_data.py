@@ -17,7 +17,7 @@ PPG = np.transpose(PPG)
 ECG = np.transpose(ECG)
 
 ECG= np.expand_dims(ECG, axis=1)
-ECG = np.expand_dims(ECG, axis=1)
+# ECG = np.expand_dims(ECG, axis=1)
 
 # load .csv file
 csv_file_path = "./PPG_data/Compiled/PPGECG_all_table.csv"
