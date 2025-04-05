@@ -25,9 +25,13 @@ df = pd.read_csv(csv_file_path)
 df['index'] = df.index
 ECGcat = df['ECGcat'].to_numpy()
 # convert ECGcat from str to one-hot integer label
-encoder = LabelEncoder()
-ECGcat = encoder.fit_transform(ECGcat) 
+# encoder = LabelEncoder()
+# ECGcat = encoder.fit_transform(ECGcat) 
 
+# print("Classes:", encoder.classes_)
+mapping = {'NORM':0, 'ECT':1}
+ECGcat_encoded = [mapping[i] for i in ECGcat]
+ECGcat_encoded = np.array(ECGcat_encoded)
 
 summary = (
     df.groupby(['ID0', 'ECGcat'])
@@ -61,9 +65,9 @@ x_train = PPG[df_train_index]
 x_val = PPG[df_val_index]
 x_test = PPG[df_test_index]
 
-y_train = ECGcat[df_train_index]
-y_val = ECGcat[df_val_index]
-y_test = ECGcat[df_test_index]
+y_train = ECGcat_encoded[df_train_index]
+y_val = ECGcat_encoded[df_val_index]
+y_test = ECGcat_encoded[df_test_index]
 
 print(f"The shape of x_train is {x_train.shape}")
 print(f"The shape of x_val is {x_val.shape}")
@@ -82,7 +86,7 @@ print(f"The type of x_test is {type(x_test)}")
 print( 'Check stratification.......')
 def show_distribution(df_split, name):
     dist = df_split['ECGcat'].value_counts(normalize=True) * 100
-    print(f"\n{name} ECG distribution (%):")
+    print(f"\n{name} PPG distribution (%):")
     print(dist.round(2))
 
 show_distribution(df_train, "Train")

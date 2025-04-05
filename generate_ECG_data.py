@@ -25,9 +25,11 @@ df = pd.read_csv(csv_file_path)
 df['index'] = df.index
 ECGcat = df['ECGcat'].to_numpy()
 # convert ECGcat from str to one-hot integer label
-encoder = LabelEncoder()
-ECGcat = encoder.fit_transform(ECGcat) 
-
+# encoder = LabelEncoder()
+# ECGcat = encoder.fit_transform(ECGcat) 
+mapping = {'NORM':0, 'ECT':1}
+ECGcat_encoded = [mapping[i] for i in ECGcat]
+ECGcat_encoded = np.array(ECGcat_encoded)
 
 summary = (
     df.groupby(['ID0', 'ECGcat'])
@@ -61,9 +63,9 @@ ECG_x_train = ECG[df_train_index]
 ECG_x_val = ECG[df_val_index]
 ECG_x_test = ECG[df_test_index]
 
-ECG_y_train = ECGcat[df_train_index]
-ECG_y_val = ECGcat[df_val_index]
-ECG_y_test = ECGcat[df_test_index]
+ECG_y_train = ECGcat_encoded[df_train_index]
+ECG_y_val = ECGcat_encoded[df_val_index]
+ECG_y_test = ECGcat_encoded[df_test_index]
 
 print(f"The shape of ECG_x_train is {ECG_x_train.shape}")
 print(f"The shape of ECG_x_val is {ECG_x_val.shape}")
