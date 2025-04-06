@@ -8,7 +8,7 @@ from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 
 
-from utils import create_train_data_loader
+from utils import create_train_data_loader, create_test_data_loader
 from models.model_adapt import EctopicsClassifier
 
 
@@ -18,12 +18,12 @@ def main(cfg: DictConfig) -> None:
 
     print("Data loading ...", flush=True)
     train_loader, valid_loader = create_train_data_loader(cfg.data)
+    test_loader = create_test_data_loader(cfg.data)
     print("Done!", flush=True)
 
     total_training_steps = len(train_loader) * cfg.trainer.parameters.max_epochs
 
     model = EctopicsClassifier(**cfg.model, total_training_steps = total_training_steps)
-    model.to("cpu")
 
     checkpoint_callback = ModelCheckpoint(**cfg.trainer.callbacks.model_checkpoint)
     early_stop_callback = EarlyStopping(**cfg.trainer.callbacks.early_stop)
@@ -31,6 +31,7 @@ def main(cfg: DictConfig) -> None:
 
     logger = TensorBoardLogger(**cfg.trainer.callbacks.logger)
 
+    pl.seed_everything(42, workers=True)
     trainer = pl.Trainer(**cfg.trainer.parameters, callbacks=callbacks, logger=logger)
 
     ckpt_path = None

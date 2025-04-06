@@ -14,7 +14,7 @@ from PIL import Image
 from torchvision.transforms import ToTensor
 from typing import List, Tuple, Union
 
-from .resnet import resnet18, resnet10
+from .resnet import resnet18_1D, resnet34_1D
 from .loss_function import get_loss_function
 
 class CompeleteModel(nn.Module):
@@ -25,10 +25,14 @@ class CompeleteModel(nn.Module):
     
 
     def __initialize_modules(self, config: DictConfig):
-        self.classifier = resnet10(**config.hyperparameters.classifier)
+        self.feat_extracter = resnet18_1D(**config.hyperparameters.feat_extracter)
+        # self.feat_extracter = resnet34_1D(**config.hyperparameters.feat_extracter)
+        self.classifier = nn.Linear(config.hyperparameters.feat_extracter.feat_dim,
+                                config.hyperparameters.classifier.num_classes)
     
     def forward(self, x:Tensor):
-        logits = self.classifier(x)
+        feat = self.feat_extracter(x)
+        logits = self.classifier(feat)
         
         return logits
     
@@ -38,6 +42,7 @@ class EctopicsClassifier(pl.LightningModule):
                  task: str="binary", 
                  num_classes: int=2, 
                  lr: float=0.0001, 
+                 weight_decay: float=0.0001,
                  loss_name: str="cross_entropy",
                  use_lr_scheduler: bool=True,
                  lr_warmup_ratio: float = 0.1,
@@ -50,6 +55,7 @@ class EctopicsClassifier(pl.LightningModule):
         self.task = task
         self.num_classes = num_classes
         self.lr = lr
+        self.weight_decay = weight_decay
         self.loss_name = loss_name
         self.use_lr_scheduler = use_lr_scheduler
         self.warmup_ratio = lr_warmup_ratio
@@ -112,7 +118,7 @@ class EctopicsClassifier(pl.LightningModule):
 
     def configure_optimizers(self):
     
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
 
         if self.use_lr_scheduler:
             scheduler = {
@@ -172,19 +178,23 @@ class EctopicsClassifier(pl.LightningModule):
                         self.logger.experiment.add_image(f"{phase}_{key}", image_tensor, global_step=self.current_epoch)
 
     def training_step(self, batch, batch_idx):
-
+        
+        # print("training steps beigins...")
         x, targets = batch
         output_logits = self(x)
+        # print(type(output_logits[0]))
+        # print(targets.dtype)
+        # print(targets.shape)
         preds = torch.argmax(output_logits, dim=1)
 
+
         if self.loss_name == "bce":
-            loss = self.loss_fn(targets, output_logits)
+            loss = self.loss_fn(targets, output_logits, self.device)
         else:
             raise ValueError(f"Invalid loss function: {self.loss_name}")
         
         self.update_metrics(preds, targets, "train")
           
-        print(type(loss))  
         self.step_losses["train"].append(loss.item())
         return {"loss": loss}
 

@@ -1,40 +1,56 @@
 data:
   path:
     train:
-      x_path: "./PPG_data/splitted_data/x_train.npy"
-      y_path: "./PPG_data/splitted_data/y_train.npy"
+      x_path: "./PPG_data/splitted_data/ECG/ECG_x_train.npy"
+      y_path: "./PPG_data/splitted_data/ECG/ECG_y_train.npy"
     valid:
-      x_path: "./PPG_data/splitted_data/x_val.npy"
-      y_path: "./PPG_data/splitted_data/y_val.npy"
+      x_path: "./PPG_data/splitted_data/ECG/ECG_x_val.npy"
+      y_path: "./PPG_data/splitted_data/ECG/ECG_y_val.npy"
     test:
-      x_path: "./PPG_data/splitted_data/x_test.npy"
-      y_path: "./PPG_data/splitted_data/y_test.npy"
+      x_path: "./PPG_data/splitted_data/ECG/ECG_x_test.npy"
+      y_path: "./PPG_data/splitted_data/ECG/ECG_y_test.npy"
+  # path:
+  #   train:
+  #     x_path: "./PPG_data/splitted_data/x_train.npy"
+  #     y_path: "./PPG_data/splitted_data/y_train.npy"
+  #   valid:
+  #     x_path: "./PPG_data/splitted_data/x_val.npy"
+  #     y_path: "./PPG_data/splitted_data/y_val.npy"
+  #   test:
+  #     x_path: "./PPG_data/splitted_data/x_test.npy"
+  #     y_path: "./PPG_data/splitted_data/y_test.npy"
   loader:
-      batch_size: 512
+      batch_size: 128
       num_workers: 4
       pin_memory: True
-      drop_last: False
+      drop_last: True
       persistent_workers: False
 
 model:
   task: binary
   num_classes: 2
-  lr: 0.0001
+  lr: 0.00005
+  weight_decay: 0.0001
   loss_name: bce
   use_lr_scheduler: False
-  lr_warmup_ratio: 0.1
+  lr_warmup_ratio: 0.05
   device: cuda
   config:
     hyperparameters:
-      classifier:
+      feat_extracter:
         signal_channels: 1
         stride: 1
+        layer_norm: True
+        feat_dim: 64
+        dropout_p: 0.3
+      classifier:
+        num_classes: 2
     metrics:
-      accuracy: 1
-      cf_matrix: 1
-      f1: 1
-      specificity: 1
-      AUC: 1
+      accuracy: True
+      cf_matrix: True
+      f1: True
+      specificity: True
+      AUC: True
       
 
 
@@ -46,7 +62,7 @@ trainer:
     num_nodes: 1
     precision: "16"
     fast_dev_run: False
-    max_epochs: 30
+    max_epochs: 50
     min_epochs: 1
     max_steps: -1
     min_steps: Null
@@ -59,7 +75,7 @@ trainer:
     val_check_interval: null
     check_val_every_n_epoch: 1
     num_sanity_val_steps: 0
-    log_every_n_steps: 200
+    log_every_n_steps: 15
     enable_checkpointing: True
     enable_progress_bar: True
     enable_model_summary: null
@@ -100,7 +116,7 @@ trainer:
       sub_dir: Null
     early_stop:
       monitor: "valid_loss"
-      min_delta: 0.01
+      min_delta: 0.001
       patience: 10
       verbose: True
       mode: "min"
