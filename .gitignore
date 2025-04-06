@@ -4,6 +4,6 @@ __pycache__
 PPG_data/Compiled
 PPG_data/Scripts
 PPG_data/.DS_Store
-#logs/
+logs/
 checkpoints/
 #main_log.txt
