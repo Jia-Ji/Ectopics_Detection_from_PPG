@@ -217,14 +217,14 @@ class ResNet1D(nn.Module):
 
         return x
 
-def resnet18_2D(signal_channels, stride, layer_norm, feat_dim=64, dropout_p=0.2):
+def resnet18_2D(signal_channels, stride, layer_norm, feat_dim, dropout_p):
     return ResNet2D(BasicBlock2D, 18, signal_channels=signal_channels, layer_norm=layer_norm, feat_dim=feat_dim)
 
-def resnet10_2D(signal_channels, stride, layer_norm, feat_dim=64):
+def resnet10_2D(signal_channels, stride, layer_norm, feat_dim):
     return ResNet2D(BasicBlock2D, 10, signal_channels=signal_channels, layer_norm=layer_norm, feat_dim=feat_dim)
 
-def resnet18_1D(signal_channels, stride, layer_norm, feat_dim=64, dropout_p=0.2):
+def resnet18_1D(signal_channels, stride, layer_norm, feat_dim, dropout_p):
     return ResNet1D(BasicBlock1D, 18, signal_channels=signal_channels, layer_norm=layer_norm, feat_dim=feat_dim, dropout_p=dropout_p)
 
-def resnet34_1D(signal_channels, stride, layer_norm, feat_dim=64, dropout_p=0.2):
+def resnet34_1D(signal_channels, stride, layer_norm, feat_dim, dropout_p):
     return ResNet1D(BasicBlock1D, 34, signal_channels=signal_channels, layer_norm=layer_norm, feat_dim=feat_dim, dropout_p=dropout_p)

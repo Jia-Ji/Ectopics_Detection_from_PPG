@@ -60,9 +60,9 @@ trainer:
     strategy: "auto"
     devices: "auto"
     num_nodes: 1
-    precision: "16"
+    precision: "32"
     fast_dev_run: False
-    max_epochs: 50
+    max_epochs: 100
     min_epochs: 1
     max_steps: -1
     min_steps: Null
@@ -75,7 +75,7 @@ trainer:
     val_check_interval: null
     check_val_every_n_epoch: 1
     num_sanity_val_steps: 0
-    log_every_n_steps: 15
+    log_every_n_steps: 1
     enable_checkpointing: True
     enable_progress_bar: True
     enable_model_summary: null
@@ -117,7 +117,7 @@ trainer:
     early_stop:
       monitor: "valid_loss"
       min_delta: 0.001
-      patience: 10
+      patience: 20
       verbose: True
       mode: "min"
       strict: True
@@ -126,7 +126,7 @@ trainer:
       divergence_threshold: null
       check_on_train_epoch_end: False
     progress_bar:
-      refresh_rate: 10
+      refresh_rate: 20
       process_position: 0
 
 
